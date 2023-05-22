@@ -4,7 +4,7 @@
 ## Как пользоваться
 
 ### Установите Python
-Python - полезная штука, в хозяйстве всегда пригодится. Для Windows 7 ставьте Python 3.8 ([32 bit](https://www.python.org/ftp/python/3.8.10/python-3.8.10.exe) или [64 bit](https://www.python.org/ftp/python/3.8.10/python-3.8.10-amd64.exe) соответственно), для более новых Windows - [последнюю](https://www.python.org/downloads/).
+Python - полезная штука, в хозяйстве всегда пригодится. Для Windows 7 ставьте Python 3.8 ([32 bit](https://www.python.org/ftp/python/3.8.10/python-3.8.10.exe) или [64 bit](https://www.python.org/ftp/python/3.8.10/python-3.8.10-amd64.exe) соответственно), для более новых Windows - [последний](https://www.python.org/downloads/).
 
 ### Скачайте скрипт
 

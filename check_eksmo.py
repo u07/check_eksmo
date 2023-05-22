@@ -179,7 +179,7 @@ def parse_ffmpeg_output(text, shortname):
 		
 		return result
 	except: 
-		print("Блин, всё же работало, чё опять за фигня? Программисты эти не могут сразу нормально сделать?")
+		print("Блин, всё же работало, чё за фигня? Программисты эти не могут нормально делать, чтоб без ошибок??")
 		for n, v in locals().items():  print(f"{n}: {v}")
 		raise
 
@@ -198,7 +198,7 @@ async def run_ffmpeg(file, sem):
 	async with sem:
 		shortname = os.path.basename(file) # 001.mp3
 		print(f"Анализирую {shortname} ...")
-		cmd = f'ffmpeg_slim -hide_banner -nostats -loglevel info -i "{file}" -af astats,silencedetect=n=-45dB:d=3 -vn -f null - 2>&1'
+		cmd = f'ffmpeg_slim -hide_banner -nostats -loglevel info -i "{file}" -af astats,silencedetect=n=-45dB:d=5 -vn -f null - 2>&1'
 		proc = await asyncio.create_subprocess_shell(cmd, stdout=asyncio.subprocess.PIPE)
 		stdout, stderr = decode(await proc.communicate())
 		#proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE) 
