@@ -1,0 +1,74 @@
+Посмотреть, что в составе:
+
+ffmpeg -demuxers
+ffmpeg -encoders
+ffmpeg -decoders
+
+
+
+Собираем:
+
+sudo apt-get  install \
+  autoconf \
+  automake \
+  build-essential \
+  cmake \
+  git-core \
+  libass-dev \
+  libfreetype6-dev \
+  libgnutls28-dev \
+  libmp3lame-dev \
+  libtool \
+  libvorbis-dev \
+  ninja-build \
+  pkg-config \
+  texinfo \
+  wget \
+  yasm \
+  meson \
+  zlib1g-dev
+  nasm \
+  mingw-w64 \
+  gcc-mingw-w64-i686
+  
+  
+
+
+mkdir -p ~/ffmpeg_sources ~/bin
+
+
+
+cd ~/ffmpeg_sources
+wget -O ffmpeg-snapshot.tar.bz2 https://ffmpeg.org/releases/ffmpeg-snapshot.tar.bz2
+tar xjvf ffmpeg-snapshot.tar.bz2
+cd ffmpeg
+PATH="$HOME/bin:$PATH" 
+PKG_CONFIG_PATH="$HOME/ffmpeg_build/lib/pkgconfig"
+
+./configure \
+--disable-ffprobe \
+--disable-everything \
+--disable-network \
+--disable-autodetect \
+--enable-small \
+--enable-decoder=mp3,mp3float,pcm*,adpcm_ima_wav,flac \
+--enable-encoder=anull,pcm_s16le \
+--enable-demuxer=wav,mp3,flac \
+--enable-protocol=file \
+--enable-filter=silencedetect,astats,aresample \
+--enable-muxer=null \
+--enable-cross-compile \
+--arch=x86  \
+--target-os=mingw32  \
+--cross-prefix=i686-w64-mingw32- 
+
+
+make
+
+
+Надо бы ещё пропатчить id3v1 на предмет поддержки cp1251 в тегах первой версии, но пока не получилось. До правок выдавал ???, после правок - Iaoai?eou
+
+
+
+
+

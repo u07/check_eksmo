@@ -1,9 +1,9 @@
 #
 #    А. Петелин, 2023
-#	 Обновлено 21.04.2023
+#	 Обновлено 22.05.2023
 #
-#  Протестировано c ffmpeg версии 2023-04-17-git-65e537b833-essentials_build-www.gyan.dev win 64 2023 gcc 12.2.0
-#
+#  Работает с облегчённым ffmpeg_slim либо обычным 2023-04-17-git-65e537b833-essentials_build-www.gyan.dev win 64 2023 gcc 12.2.0
+#  
 
 def on_error(exc_type, exc_value, exc_traceback):
 	import traceback
@@ -57,7 +57,7 @@ def parse_ffmpeg_output(text, shortname):
 		match = re.search(r"title\s*: (.*)", text)
 		val = match.group(1) if match else ""
 		col = good if not_shit(val) or file_ext != '.mp3' else bad
-		comm = "Название главы, как в оглавлении. Теги обязательны для mp3. Кодировка - ANSI (Win-1251)"
+		comm = "Название главы, как в оглавлении. Теги обязательны для mp3. В требованиях Эксмо-2023 указан устаревший id3v1 в кодировке Win-1251, но фактически следует проставлять id3v2 в юникоде."
 		result += (('Тег title', val, col, comm), )
 		
 		#	artist          : Кристина Берндт
@@ -198,7 +198,7 @@ async def run_ffmpeg(file, sem):
 	async with sem:
 		shortname = os.path.basename(file) # 001.mp3
 		print(f"Анализирую {shortname} ...")
-		cmd = f'ffmpeg -hide_banner -nostats -loglevel info -i "{file}" -af astats,silencedetect=n=-45dB:d=3 -f null - 2>&1'
+		cmd = f'ffmpeg_slim -hide_banner -nostats -loglevel info -i "{file}" -af astats,silencedetect=n=-45dB:d=3 -vn -f null - 2>&1'
 		proc = await asyncio.create_subprocess_shell(cmd, stdout=asyncio.subprocess.PIPE)
 		stdout, stderr = decode(await proc.communicate())
 		#proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE) 
