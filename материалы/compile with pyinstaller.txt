@@ -1,0 +1,16 @@
+
+
+Установить пакеты под 32-бит версию и обратно:
+
+	pip config set global.target C:\Users\user\AppData\Roaming\Python\python38-32\site-packages
+	py -3.8-32 -m pip install (нужные пакеты)
+	pip config unset global.target
+
+Компиляция:
+
+pyinstaller.exe check_eksmo.py --onefile -i giza_pyramidki_all_sizes.ico
+
+Пути:
+
+C:\Users\user\AppData\Local\Programs\Python\Python38-32\Scripts\pyinstaller.exe
+C:\Users\user\AppData\Roaming\Python\Python38-32\Scripts\pyinstaller.exe (этот правильный)

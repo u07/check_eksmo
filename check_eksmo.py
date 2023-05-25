@@ -1,8 +1,8 @@
 #
 #    А. Петелин, 2023
-#	 Обновлено 22.05.2023
+#	 Обновлено 25.05.2023
 #
-#  Работает с облегчённым ffmpeg_slim либо обычным 2023-04-17-git-65e537b833-essentials_build-www.gyan.dev win 64 2023 gcc 12.2.0
+#  Работает с облегчённым ffmpeg (в комплекте) либо с обычным 2023-04-17-git-65e537b833-essentials_build-www.gyan.dev win 64 2023 gcc 12.2.0
 #  
 
 def on_error(exc_type, exc_value, exc_traceback):
@@ -11,6 +11,7 @@ def on_error(exc_type, exc_value, exc_traceback):
 	input(f"\nТысяча чертей! Какая-то дурацкая ошибка! \n\n {exc_value}\n")
 	sys.exit(-1)
 
+print("\nЗагрузка...", end='\r')
 import sys; sys.excepthook = on_error
 import os
 import re
@@ -23,11 +24,10 @@ import webbrowser
 import datetime
 
 
-help_string = """
- Этот скрипт проверит ваши аудиокниги на соответствие требованиям 
- издательства Эксмо. Принимаются файлы mp3, wav и папки.
+help_string = """ Эта утилита проверит ваши аудиокниги на соответствие требованиям 
+ издательства Эксмо. Принимаются файлы mp3, wav, flac и папки.
  
- Пример: check_eksmo.py "D:\Книга 1\" "D:\Книга 2\" 
+ Пример запуска: check_eksmo "D:\Книга 1\" "D:\Книга 2\" 
  
  Или просто перетащите файл/папку сюда и нажмите Enter: 
 
@@ -198,7 +198,7 @@ async def run_ffmpeg(file, sem):
 	async with sem:
 		shortname = os.path.basename(file) # 001.mp3
 		print(f"Анализирую {shortname} ...")
-		cmd = f'ffmpeg_slim -hide_banner -nostats -loglevel info -i "{file}" -af astats,silencedetect=n=-45dB:d=5 -vn -f null - 2>&1'
+		cmd = f'ffmpeg -hide_banner -nostats -loglevel info -i "{file}" -af astats,silencedetect=n=-45dB:d=5 -vn -f null - 2>&1'
 		proc = await asyncio.create_subprocess_shell(cmd, stdout=asyncio.subprocess.PIPE)
 		stdout, stderr = decode(await proc.communicate())
 		#proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE) 
@@ -267,7 +267,7 @@ files = [f for f in files if (os.path.isfile(f) and f.lower().endswith(('.wav', 
 
 if not files: 
 	input("Нет ни одного подходящего файла!")
-	exit()
+	sys.exit(-1)
 print(f'\nВсего {len(files)} файлов. Анализируем по {MAX_CONCURRENT_TASKS} одновременно.')
 
 asyncio.run(main(files))
