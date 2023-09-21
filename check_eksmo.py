@@ -1,6 +1,6 @@
 #
 #    А. Петелин, 2023
-#	 Обновлено 25.05.2023
+#	 Обновлено 21.09.2023
 #
 #  Работает с облегчённым ffmpeg (в комплекте) либо с обычным 2023-04-17-git-65e537b833-essentials_build-www.gyan.dev win 64 2023 gcc 12.2.0
 #  
@@ -43,7 +43,7 @@ def parse_ffmpeg_output(text, shortname):
 		bad = "b"  
 		compromise = "c" 
 		neutral = "n"
-		not_shit = lambda txt: txt and all(x not in txt for x in "óåûàîýÿèþ")
+		not_shit = lambda txt: txt and all(x not in txt for x in "óåûàîýÿèþÐ¾ÐÑ") # уеыаоэяию
 		
 		# 001.mp3 - 999.mp3 or Sample
 		file_base, file_ext = os.path.splitext(shortname)
