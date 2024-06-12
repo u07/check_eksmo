@@ -1,6 +1,6 @@
 #
 #    А. Петелин, 2023
-#	 Обновлено 21.09.2023
+#	 Обновлено 12.06.2024
 #
 #  Работает с облегчённым ffmpeg (в комплекте) либо с обычным 2023-04-17-git-65e537b833-essentials_build-www.gyan.dev win 64 2023 gcc 12.2.0
 #  
@@ -133,7 +133,8 @@ def parse_ffmpeg_output(text, shortname):
 		# silence_end: 25.6301 | silence_duration: 1.2112
 		matches = re.findall(r"silence_end: ([\-\d\.]+) \| silence_duration: ([\-\d\.]+)", text)
 		val = '<br>'.join([f"{m[1]} сек. на {datetime.timedelta(seconds=round(float(m[0])))}" for m in matches])
-		col = bad if val else good
+		col = compromise if val else good
+		if any(float(duration) > 4.98 for _, duration in matches): col = bad
 		comm = "Паузы строго до 5 сек."
 		result += (('Тишина', val, col, comm), )	
 		
@@ -149,13 +150,17 @@ def parse_ffmpeg_output(text, shortname):
 		
 		# Peak level dB: -5.814296
 		val = re.search(r"Peak level dB: ([\-\d\.]+)", text).group(1)
-		col = bad if float(val) >= -3 else good
+		if float(val) < -3.5: col = good
+		elif float(val) < -3: col = compromise
+		else: col = bad
 		comm = "Максимальное пиковое значение -3dB"
 		result += (('Макс. пик, дБ', val, col, comm), )	
 		
 		# RMS level dB: -22.339706
 		val = re.search(r"RMS level dB: ([\-\d\.]+)", text).group(1)
-		col = good if -23 < float(val) < -18 else bad
+		if -22.5 <= float(val) <= -18.5: col = good
+		elif -23 <= float(val) <= -18: col = compromise
+		else: col = bad		
 		comm = "Уровень звука по RMS от -23dB до -18dB"
 		result += (('Интегральный RMS, дБ', val, col, comm), )	
 		
@@ -198,7 +203,7 @@ async def run_ffmpeg(file, sem):
 	async with sem:
 		shortname = os.path.basename(file) # 001.mp3
 		print(f"Анализирую {shortname} ...")
-		cmd = f'ffmpeg -hide_banner -nostats -loglevel info -i "{file}" -af astats,silencedetect=n=-45dB:d=5 -vn -f null - 2>&1'
+		cmd = f'ffmpeg -hide_banner -nostats -loglevel info -i "{file}" -af astats,silencedetect=n=-45dB:d=3 -vn -f null - 2>&1'
 		proc = await asyncio.create_subprocess_shell(cmd, stdout=asyncio.subprocess.PIPE)
 		stdout, stderr = decode(await proc.communicate())
 		#proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE) 
