@@ -15,7 +15,6 @@ jobs:
 
       - name: Update apt
         run: |
-          sudo apt-get update
           sudo add-apt-repository universe
           sudo add-apt-repository multiverse
           sudo add-apt-repository restricted
