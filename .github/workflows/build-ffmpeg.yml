@@ -1,0 +1,86 @@
+name: Build FFmpeg Windows
+
+on:
+  workflow_dispatch:
+
+jobs:
+  ffmpeg-win:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        arch: [i686, x86_64]
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Install dependencies
+        run: sudo apt-get update && sudo apt-get install -y \
+          autoconf automake build-essential cmake git-core libass-dev \
+          libfreetype6-dev libgnutls28-dev libmp3lame-dev libtool \
+          libvorbis-dev ninja-build pkg-config texinfo wget yasm meson \
+          zlib1g-dev nasm mingw-w64 gcc-mingw-w64-i686
+
+      - name: Download FFmpeg
+        run: |
+          mkdir -p ~/ffmpeg_sources ~/bin
+          cd ~/ffmpeg_sources
+          wget -O ffmpeg-snapshot.tar.bz2 https://ffmpeg.org/releases/ffmpeg-snapshot.tar.bz2
+          tar xjvf ffmpeg-snapshot.tar.bz2
+
+      - name: Build FFmpeg
+        run: |
+          cd ~/ffmpeg_sources/ffmpeg
+          PATH="$HOME/bin:$PATH"
+          if [ "${{ matrix.arch }}" = "i686" ]; then
+            export CC=i686-w64-mingw32-gcc
+            export CXX=i686-w64-mingw32-g++
+            export CROSS_PREFIX=i686-w64-mingw32-
+            export BUILD_HOST=i686-w64-mingw32
+            export ARCH=x86
+            export AS=nasm
+            export AR=i686-w64-mingw32-ar
+            export LD=i686-w64-mingw32-ld
+            export RANLIB=i686-w64-mingw32-ranlib
+            export STRIP=i686-w64-mingw32-strip
+            export BUILD_PATH="$HOME/build-32bit"
+          else
+            export CC=x86_64-w64-mingw32-gcc
+            export CXX=x86_64-w64-mingw32-g++
+            export CROSS_PREFIX=x86_64-w64-mingw32-
+            export BUILD_HOST=x86_64-w64-mingw32
+            export ARCH=x86_64
+            export AS=nasm
+            export AR=x86_64-w64-mingw32-ar
+            export LD=x86_64-w64-mingw32-ld
+            export RANLIB=x86_64-w64-mingw32-ranlib
+            export STRIP=x86_64-w64-mingw32-strip
+            export BUILD_PATH="$HOME/build"
+          fi
+          export PKG_CONFIG_PATH="$BUILD_PATH/lib/pkgconfig"
+          ./configure \
+            --disable-ffprobe \
+            --disable-everything \
+            --disable-network \
+            --disable-autodetect \
+            --enable-small \
+            --enable-decoder=mp3,mp3float,pcm*,adpcm_ima_wav,flac \
+            --enable-encoder=anull,pcm_s16le \
+            --enable-demuxer=wav,mp3,flac \
+            --enable-protocol=file \
+            --enable-filter=silencedetect,astats,aresample \
+            --enable-muxer=null \
+            --enable-cross-compile \
+            --arch=$ARCH \
+            --target-os=mingw32 \
+            --prefix=$BUILD_PATH \
+            --cross-prefix=$CROSS_PREFIX
+          make -j$(nproc)
+          cp ffmpeg.exe $BUILD_PATH/ffmpeg.exe
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: ffmpeg
+          path: |
+            ~/build
+            ~/build-32bit
