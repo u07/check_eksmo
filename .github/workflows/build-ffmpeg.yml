@@ -13,21 +13,10 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v4
 
-      - name: Update apt
-        run: |
-          sudo add-apt-repository universe
-          sudo add-apt-repository multiverse
-          sudo add-apt-repository restricted
-          sudo apt update  
-          
-          sudo apt-cache policy autoconf
-          sudo apt-cache policy zlib1g-dev
-          sudo apt-cache policy libfreetype6-dev
-          sudo apt-cache policy libvorbis-dev
-
-      
       - name: Install dependencies
-        run: sudo apt install -y \
+        run: |
+          sudo apt update  
+          sudo apt install -y \
           autoconf automake build-essential cmake git-core libass-dev \
           libfreetype6-dev libgnutls28-dev libmp3lame-dev libtool \
           libvorbis-dev ninja-build pkg-config texinfo wget yasm meson \
