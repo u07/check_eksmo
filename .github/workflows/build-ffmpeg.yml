@@ -19,7 +19,11 @@ jobs:
           sudo add-apt-repository multiverse
           sudo add-apt-repository restricted
           sudo apt update  
+          
           sudo apt-cache policy autoconf
+          sudo apt-cache policy zlib1g-dev
+          sudo apt-cache policy libfreetype6-dev
+          sudo apt-cache policy libvorbis-dev
 
       
       - name: Install dependencies
