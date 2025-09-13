@@ -3,9 +3,7 @@
 
 ## Как пользоваться
 
-### Скачайте утилиту
-
-Скачать можно [по этой ссылке](https://github.com/u07/check_eksmo/releases/latest/download/check_eksmo.zip). 
+[Скачайте утилиту](https://github.com/u07/check_eksmo/releases/latest/download/check_eksmo.zip) (есть также [версия 32 бит для старых компьютеров](https://github.com/u07/check_eksmo/releases/latest/download/check_eksmo.zip)).  
 
 Распакуйте архив. В папке должны появиться два файла, check_eksmo и ffmpeg.
 
